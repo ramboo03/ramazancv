@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<title>RamazanOS</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Ramazan, software engineer in opleiding (HBO-ICT, Windesheim Almere). Interactief 3D-portfolio: log in op RamazanOS.">
+<meta property="og:title" content="RamazanOS · portfolio van Ramazan">
+<meta property="og:description" content="Interactief 3D-portfolio. Klik op de laptop en log in.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0d0c11">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230d0c11'/%3E%3Ccircle cx='16' cy='16' r='9' fill='%233557ff'/%3E%3Ccircle cx='19' cy='13' r='4' fill='%23ffb35c'/%3E%3C/svg%3E">
+<style>html,body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a dark evening room with a desk in 3D. Clicking the laptop flies the camera into its screen, where a full mini operating system (RamazanOS) takes over the viewport; every CV section is an app window. Desk objects are shortcuts. Single deliberate look: warm dark room, cool light OS. */
+:root{
+  --room:#0d0c11;
+  --ink:#f4efe7;
+  --mute:#a59e94;
+  --lamp:#ffb35c;
+  --win:#f6f6f8;
+  --wtext:#18191d;
+  --wmute:#666a74;
+  --line:#e0e2e8;
+  --cobalt:#3557ff;
+  --f-display:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --f-ui:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"Geist Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--room);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.55;overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--room)}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+button{font:inherit}
+:focus-visible{outline:2px solid var(--lamp);outline-offset:3px}
+
+/* ---------- room UI ---------- */
+.hero{position:fixed;z-index:5;top:calc(28px + env(safe-area-inset-top,0px));left:max(28px,env(safe-area-inset-left,0px));right:max(16px,env(safe-area-inset-right,0px));max-width:470px;display:flex;flex-direction:column;gap:14px;transition:opacity .45s,transform .45s;pointer-events:none}
+.hero>*{pointer-events:auto}
+.hero .eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--lamp)}
+.hero h1{font-family:var(--f-display);font-weight:400;font-style:italic;font-size:clamp(58px,8.5vw,112px);line-height:.88;margin:0;letter-spacing:-.02em;text-shadow:0 4px 30px rgba(0,0,0,.5)}
+.hero p{margin:0;color:var(--mute);max-width:40ch;text-shadow:0 2px 14px rgba(0,0,0,.6)}
+.hero p strong{color:var(--ink);font-weight:500}
+.shortcuts{display:flex;flex-wrap:wrap;gap:8px}
+.chip-btn{border:1px solid rgba(244,239,231,.2);background:rgba(13,12,17,.55);color:var(--ink);border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:border-color .2s,background .2s}
+.chip-btn:hover{border-color:var(--lamp);background:rgba(255,179,92,.12)}
+.chip-btn.primary{background:var(--lamp);color:#1d1206;border-color:var(--lamp);font-weight:600}
+.chip-btn.primary:hover{background:#ffc888}
+.chip-btn small{color:var(--mute);margin-left:4px}
+.chip-btn.primary small{color:#5a3a12}
+body.os .hero{opacity:0;transform:translateY(-10px);pointer-events:none}
+body.os .hero>*{pointer-events:none}
+.tip{position:fixed;z-index:8;pointer-events:none;font-family:var(--f-mono);font-size:12px;color:var(--ink);background:rgba(13,12,17,.85);border:1px solid rgba(255,179,92,.45);padding:6px 10px;border-radius:8px;transform:translate(14px,14px);white-space:nowrap}
+.toast{position:fixed;z-index:9;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;transition:.35s;background:rgba(13,12,17,.88);border:1px solid rgba(244,239,231,.18);border-radius:12px;padding:10px 16px;font-size:13px;color:var(--ink);pointer-events:none;max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.legend{position:fixed;z-index:5;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));font-family:var(--f-mono);font-size:11px;color:var(--mute);text-align:right;line-height:1.7;transition:opacity .4s;text-shadow:0 1px 8px #000}
+body.os .legend{opacity:0}
+
+/* ---------- OS ---------- */
+#os{position:fixed;inset:0;z-index:20;opacity:0;pointer-events:none;transition:opacity .4s;color:var(--wtext);overflow:hidden;
+  background:
+    radial-gradient(circle at 72% 80%,rgba(255,226,184,.95) 0 6.5%,rgba(255,200,140,.35) 7%,transparent 16%),
+    radial-gradient(130% 85% at 72% 112%,#ffa45e 0%,#ea5b68 22%,#7b3d9e 46%,#262a63 72%,#11143a 100%)}
+#os.on{opacity:1;pointer-events:auto}
+#os::after{content:"RamazanOS";position:absolute;left:max(28px,env(safe-area-inset-left,0px));bottom:110px;font-family:var(--f-display);font-style:italic;font-size:clamp(60px,11vw,170px);line-height:1;color:rgba(255,255,255,.07);pointer-events:none}
+.menubar{position:absolute;top:0;left:0;right:0;height:calc(30px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) max(12px,env(safe-area-inset-right,0px)) 0 max(12px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:18px;background:rgba(246,246,248,.72);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);font-size:13px;z-index:500;border-bottom:1px solid rgba(0,0,0,.06)}
+.menubar .brand{font-weight:700;display:flex;align-items:center;gap:7px}
+.menubar .brand i{width:12px;height:12px;border-radius:50%;background:conic-gradient(var(--cobalt),#ff7b54,var(--cobalt))}
+.menubar .m{color:#30323a;cursor:default}
+.menubar .m.click{cursor:pointer}
+.menubar .m.click:hover{color:var(--cobalt)}
+.menubar .grow{flex:1}
+.menubar .stat{font-family:var(--f-mono);font-size:12px;color:#30323a;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.menubar svg{width:15px;height:15px}
+.pwr{border:0;background:none;padding:4px;border-radius:6px;cursor:pointer;display:flex;color:#30323a}
+.pwr:hover{background:rgba(0,0,0,.08);color:#d2263b}
+.icons{position:absolute;top:calc(48px + env(safe-area-inset-top,0px));left:max(18px,env(safe-area-inset-left,0px));display:grid;grid-auto-flow:column;grid-template-rows:repeat(5,auto);gap:10px 8px}
+.dicon{width:86px;display:flex;flex-direction:column;align-items:center;gap:6px;border:0;background:none;color:#fff;font-size:12px;cursor:pointer;padding:8px 4px;border-radius:10px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.dicon:hover{background:rgba(255,255,255,.14)}
+.ico{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;box-shadow:0 6px 16px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.35)}
+.ico svg{width:56%;height:56%;color:#fff}
+.dock{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:8px;padding:8px 10px;background:rgba(246,246,248,.38);border:1px solid rgba(255,255,255,.35);border-radius:20px;backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);z-index:400;max-width:calc(100vw - 20px)}
+.dock button{border:0;background:none;padding:0;cursor:pointer;position:relative;transition:transform .18s cubic-bezier(.2,.8,.2,1);transform-origin:bottom center}
+.dock button:hover{transform:translateY(-6px) scale(1.18)}
+.dock .ico{width:46px;height:46px}
+.dock button::after{content:"";position:absolute;left:50%;bottom:-6px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:#1b1c22;opacity:0}
+.dock button.open::after{opacity:.8}
+.dock .sep{width:1px;align-self:stretch;background:rgba(0,0,0,.15);margin:4px 2px}
+.dock button[data-tip]:hover::before{content:attr(data-tip);position:absolute;bottom:62px;left:50%;transform:translateX(-50%);background:rgba(24,25,29,.88);color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;white-space:nowrap}
+
+.win{position:absolute;background:var(--win);border-radius:12px;box-shadow:0 24px 70px rgba(10,8,30,.45),0 0 0 1px rgba(0,0,0,.08);display:flex;flex-direction:column;overflow:hidden;min-width:280px;transition:opacity .2s,transform .22s cubic-bezier(.2,.8,.2,1)}
+.win.opening{opacity:0;transform:scale(.92) translateY(14px)}
+.win.min{opacity:0;transform:scale(.6) translateY(220px);pointer-events:none}
+.win.max{left:8px!important;top:calc(38px + env(safe-area-inset-top,0px))!important;width:calc(100% - 16px)!important;height:calc(100% - 132px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important}
+.win.blur .tbar{background:#eceef2}
+.win.blur .tbar .dots i{background:#cfd2d8!important}
+.tbar{height:38px;flex:0 0 38px;display:flex;align-items:center;padding:0 12px;gap:10px;background:#e9ebf0;border-bottom:1px solid var(--line);cursor:grab;user-select:none;touch-action:none}
+.tbar:active{cursor:grabbing}
+.dots{display:flex;gap:7px}
+.dots i{width:12px;height:12px;border-radius:50%;display:block;cursor:pointer;border:0;padding:0}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.tbar .ttl{position:absolute;left:0;right:0;text-align:center;font-size:13px;font-weight:600;color:#3a3d46;pointer-events:none}
+.tbar .dots{position:relative;z-index:1}
+.wbody{flex:1;overflow:auto;padding:22px 24px;min-height:0}
+.wbody h3{margin:0 0 10px;font-size:22px;letter-spacing:-.02em}
+.wbody p{margin:0 0 12px;color:#3d4049;max-width:62ch}
+.muted{color:var(--wmute)}
+.mono{font-family:var(--f-mono)}
+.pill{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:3px 8px;border-radius:6px;background:#e8ebff;color:var(--cobalt)}
+.wbtn{border:1px solid var(--line);background:#fff;color:var(--wtext);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.wbtn:hover{border-color:var(--cobalt);color:var(--cobalt)}
+.wbtn.pri{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.wbtn.pri:hover{background:#2443e8;color:#fff}
+
+/* notes */
+.note{font-size:16px;line-height:1.7}
+.note .sig{font-family:var(--f-display);font-style:italic;font-size:30px;color:var(--wtext);margin-top:8px}
+/* study */
+.study{display:grid;grid-template-columns:150px 1fr;gap:24px;align-items:start}
+.ring{position:relative;width:150px;height:150px}
+.ring svg{width:150px;height:150px;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:30px;letter-spacing:-.03em;line-height:1.05}
+.ring b small{display:block;font-size:11px;font-weight:500;color:var(--wmute);letter-spacing:0}
+.tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.tl li{display:grid;grid-template-columns:92px 1fr;gap:2px 12px}
+.tl .y{font-family:var(--f-mono);font-size:12px;color:var(--cobalt);padding-top:2px}
+.tl .w{font-weight:600}
+.tl .d{grid-column:2;color:var(--wmute);font-size:13px}
+/* monitor */
+.tabs{display:flex;gap:4px;background:#e9ebf0;padding:3px;border-radius:9px;width:max-content;margin-bottom:14px}
+.tabs button{border:0;background:none;padding:5px 12px;border-radius:7px;font-size:12px;cursor:pointer;color:#4a4d57}
+.tabs button.on{background:#fff;color:var(--wtext);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.mon{width:100%;border-collapse:collapse;font-size:13px}
+.mon th{text-align:left;font-weight:500;color:var(--wmute);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid var(--line)}
+.mon td{padding:9px 8px;border-bottom:1px solid #eceef2;font-variant-numeric:tabular-nums}
+.mon td.n{font-weight:600}
+.mon .bar{height:7px;background:#e9ebf0;border-radius:6px;overflow:hidden;min-width:90px}
+.mon .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cobalt),#7a8cff);border-radius:6px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.mon td.p{font-family:var(--f-mono);width:56px;text-align:right}
+.monfoot{display:flex;justify-content:space-between;margin-top:12px;font-family:var(--f-mono);font-size:11px;color:var(--wmute)}
+/* finder */
+.finder{display:grid;grid-template-columns:150px 1fr;margin:-22px -24px;height:calc(100% + 44px)}
+.side{background:#eef0f4;border-right:1px solid var(--line);padding:16px 10px;font-size:13px;display:flex;flex-direction:column;gap:2px}
+.side .lbl{font-size:11px;color:var(--wmute);font-weight:600;padding:6px 8px 4px}
+.side span{padding:6px 8px;border-radius:6px;color:#3a3d46}
+.side span.on{background:#dfe3ec;font-weight:600}
+.fmain{padding:16px 20px;overflow:auto;min-width:0}
+.crumb{font-size:12px;color:var(--wmute);margin-bottom:14px;display:flex;gap:6px;align-items:center}
+.crumb button{border:0;background:none;color:var(--cobalt);cursor:pointer;padding:0;font-size:12px}
+.folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.folder{border:0;background:none;border-radius:10px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--wtext)}
+.folder:hover{background:#e8ebff}
+.folder svg{width:64px;height:52px}
+.pdet h4{margin:0 0 6px;font-size:20px;letter-spacing:-.02em}
+.pdet .chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.pdet .shot{height:120px;border-radius:10px;margin-bottom:14px;position:relative;overflow:hidden}
+/* calendar */
+.cal{display:flex;flex-direction:column;gap:12px}
+.ev{display:grid;grid-template-columns:70px 1fr;gap:12px;align-items:stretch}
+.ev .yr{font-family:var(--f-mono);font-size:12px;color:var(--wmute);text-align:right;padding-top:12px}
+.ev .blk{border-radius:10px;padding:12px 14px;border-left:4px solid}
+.ev .blk b{display:block}
+.ev .blk span{font-size:13px;color:#4a4d57}
+.ev .blk em{font-style:normal;font-family:var(--f-mono);font-size:11px;color:var(--wmute)}
+/* mail */
+.mail{display:flex;flex-direction:column;gap:0;margin:-22px -24px 0}
+.mrow{display:flex;align-items:center;gap:10px;padding:10px 20px;border-bottom:1px solid var(--line);font-size:13px;flex-wrap:wrap}
+.mrow label{color:var(--wmute);width:72px}
+.mrow output,.mrow input{flex:1;min-width:0;font:inherit;font-size:14px;border:0;background:none;color:var(--wtext);outline:0;user-select:all}
+.mail textarea{border:0;outline:0;resize:none;font:inherit;font-size:14px;line-height:1.6;padding:16px 20px;min-height:150px;background:none;color:var(--wtext)}
+.mfoot{display:flex;gap:8px;flex-wrap:wrap;padding:12px 20px 0;align-items:center}
+.mfoot .muted{font-size:12px;flex-basis:100%}
+/* terminal */
+.term{background:#121318;color:#d9dbe2;font-family:var(--f-mono);font-size:13px;margin:-22px -24px;min-height:calc(100% + 44px);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.term .o{white-space:pre-wrap;word-break:break-word}
+.term .c b{color:#7ee2a8;font-weight:400}
+.term .ok{color:#7ee2a8}.term .er{color:#ff8a80}.term .ac{color:#8fb4ff}
+.term form{display:flex;gap:8px}
+.term form b{color:#7ee2a8;font-weight:400}
+.term .tgo{background:#2a2c35;color:#d9dbe2;border:1px solid #3a3d48;border-radius:6px;font-family:var(--f-mono);font-size:11px;padding:3px 8px;cursor:pointer}
+.term .tgo:hover{border-color:#7ee2a8;color:#7ee2a8}
+.term input{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:inherit;caret-color:#7ee2a8}
+.empty{display:grid;place-items:center;text-align:center;height:100%;gap:8px;color:var(--wmute)}
+.empty svg{width:70px;height:70px;color:#c4c8d2}
+.welcome ol{padding-left:20px;margin:0 0 12px;color:#3d4049}
+.welcome li{margin-bottom:6px}
+.welcome kbd{font-family:var(--f-mono);font-size:11px;background:#e9ebf0;border:1px solid var(--line);border-radius:4px;padding:1px 5px}
+
+@media (max-width:760px){
+  .hero{left:max(16px,env(safe-area-inset-left,0px));top:calc(18px + env(safe-area-inset-top,0px))}
+  .hero h1{font-size:60px}
+  .hero{gap:10px}
+  .hero p{font-size:14px}
+  .chip-btn{padding:7px 12px;font-size:12px}
+  .legend{display:none}
+  .menubar .m:not(.brand):not(.click),.menubar .hide-s{display:none}
+  .icons{grid-auto-flow:row;grid-template-columns:repeat(4,1fr);grid-template-rows:none;left:8px;right:8px}
+  .dicon{width:auto}
+  .dock{gap:4px;padding:6px 8px}.dock .ico{width:38px;height:38px}.dock .sep{display:none}
+  .win{left:6px!important;right:6px;width:auto!important;top:calc(38px + env(safe-area-inset-top,0px))!important;height:calc(100% - 118px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;min-width:0}
+  .tbar{cursor:default}
+  .study{grid-template-columns:1fr}
+  .finder{grid-template-columns:1fr}.side{display:none}
+  .tl li{grid-template-columns:1fr}.tl .d{grid-column:1}
+  #os::after{bottom:90px}
+}
+@media (prefers-reduced-motion:reduce){
+  .win,.win.opening,.win.min,#os,.hero,.dock button{transition:none}
+}
+</style>
+
+</head>
+<body>
+<canvas id="scene" aria-hidden="true"></canvas>
+
+<section class="hero" id="hero">
+  <div class="eyebrow">Portfolio · HBO-ICT Software Engineering</div>
+  <h1>Ramazan</h1>
+  <p>Welkom aan mijn bureau. <strong>Klik op de laptop om in te loggen</strong> op mijn eigen besturingssysteem. De boeken, de memo's en de telefoon zijn snelkoppelingen.</p>
+  <div class="shortcuts">
+    <button class="chip-btn primary" type="button" data-open="welkom">Inloggen <small>laptop</small></button>
+    <button class="chip-btn" type="button" data-open="opleiding">Opleiding <small>boeken</small></button>
+    <button class="chip-btn" type="button" data-open="skills">Skills <small>memo's</small></button>
+    <button class="chip-btn" type="button" data-open="contact">Contact <small>telefoon</small></button>
+  </div>
+</section>
+<div class="legend" aria-hidden="true">Klik op de lamp, de mok of de plant<br>Beweeg je muis om rond te kijken</div>
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" role="status"></div>
+
+<div id="os" aria-hidden="true">
+  <div class="menubar">
+    <span class="brand"><i></i>RamazanOS</span>
+    <span class="m">Archief</span><span class="m">Bewerk</span><span class="m">Venster</span>
+    <span class="m click" id="mHelp">Help</span>
+    <span class="grow"></span>
+    <span class="stat hide-s">NL</span>
+    <span class="stat hide-s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg></span>
+    <span class="stat hide-s"><svg viewBox="0 0 28 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="10" rx="3"/><rect x="4.5" y="9.5" width="13" height="5" rx="1" fill="currentColor" stroke="none"/><path d="M24 10.5v3" stroke-linecap="round"/></svg>86%</span>
+    <span class="stat" id="clock">--</span>
+    <button class="pwr" id="pwr" type="button" aria-label="Afsluiten en terug naar het bureau"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3v8M6.3 6.8a8 8 0 1 0 11.4 0"/></svg></button>
+  </div>
+  <div class="icons" id="icons"></div>
+  <div id="wins"></div>
+  <nav class="dock" id="dock" aria-label="Dock"></nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isSmall=()=>innerWidth<760;
+const $=s=>document.querySelector(s);
+const EMAIL='ramazan@voorbeeld.nl';
+
+/* ============ icons ============ */
+const SVG={
+  notes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9 9h6M9 13h6M9 17h3"/></svg>',
+  cap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2.5 9 2.5 12 0v-5M22 9v6"/></svg>',
+  gauge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 18V6M9 18v-7M14 18V9M19 18v-4"/></svg>',
+  folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+  mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg>',
+  term:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7l5 5-5 5M12 17h7"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/></svg>',
+  hand:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v.5M12 11.5V16"/></svg>'
+};
+const APPS={
+  welkom:{t:'Welkom',ic:'hand',bg:'linear-gradient(145deg,#ffb35c,#ff7b54)',w:460,h:380},
+  over:{t:'Over mij',ic:'notes',bg:'linear-gradient(145deg,#ffd75e,#f5a623)',w:540,h:470},
+  opleiding:{t:'Opleiding',ic:'cap',bg:'linear-gradient(145deg,#5b8cff,#3557ff)',w:600,h:420},
+  skills:{t:'Skills',ic:'gauge',bg:'linear-gradient(145deg,#4ee0b0,#11a37f)',w:560,h:480},
+  projecten:{t:'Projecten',ic:'folder',bg:'linear-gradient(145deg,#7ec4ff,#3a8ef0)',w:640,h:440},
+  ervaring:{t:'Ervaring',ic:'cal',bg:'linear-gradient(145deg,#ff7a8a,#e5364f)',w:520,h:420},
+  contact:{t:'Contact',ic:'mail',bg:'linear-gradient(145deg,#6fd3ff,#2f8fe6)',w:560,h:470},
+  terminal:{t:'Terminal',ic:'term',bg:'linear-gradient(145deg,#3a3d48,#15161b)',w:560,h:360},
+  prullenbak:{t:'Prullenbak',ic:'trash',bg:'linear-gradient(145deg,#d6dae3,#9aa1b0)',w:400,h:320}
+};
+const DESK=['welkom','over','opleiding','skills','projecten','ervaring','contact','terminal','prullenbak'];
+const DOCK=['over','opleiding','skills','projecten','ervaring','contact','terminal','|','prullenbak'];
+const icoHTML=id=>'<span class="ico" style="background:'+APPS[id].bg+'">'+SVG[APPS[id].ic]+'</span>';
+DESK.forEach(id=>{const b=document.createElement('button');b.className='dicon';b.type='button';b.innerHTML=icoHTML(id)+'<span>'+APPS[id].t+'</span>';b.addEventListener('click',()=>openApp(id));$('#icons').appendChild(b);});
+const dockBtns={};
+DOCK.forEach(id=>{if(id==='|'){const s=document.createElement('span');s.className='sep';$('#dock').appendChild(s);return;}
+  const b=document.createElement('button');b.type='button';b.dataset.tip=APPS[id].t;b.setAttribute('aria-label',APPS[id].t);b.innerHTML=icoHTML(id);b.addEventListener('click',()=>openApp(id));$('#dock').appendChild(b);dockBtns[id]=b;});
+
+/* ============ app content ============ */
+const PROJ=[
+  {n:'Showroom 3D',d:'Interactieve autoconfigurator in de browser. Je bekijkt een auto rondom, wisselt live van lakkleur en velgen en ziet de prijs direct meelopen.',t:['Three.js','React','TypeScript'],c:['#1d2a5c','#3557ff']},
+  {n:'StudyFlow',d:'Planner voor studenten die deadlines uit het rooster haalt en automatisch een realistische weekplanning voorstelt.',t:['.NET','C#','SQL'],c:['#0f5a48','#4ee0b0']},
+  {n:'Pulse Dashboard',d:'Realtime dashboard voor sensordata via WebSockets. Gebouwd in een projectteam van vijf, met Docker voor de hele stack.',t:['TypeScript','WebSockets','Docker'],c:['#5c1d36','#ff7a8a']},
+  {n:'Shader Lab',d:'Verzameling eigen GLSL-experimenten: noise-velden, deeltjessystemen en post-processing effecten.',t:['GLSL','WebGL'],c:['#3e2a6e','#b69bff']}
+];
+const SKILLS={
+  Talen:[['TypeScript',82,3],['C#',78,2],['SQL',74,2],['Java',60,1],['Python',58,2],['GLSL',45,1]],
+  Frameworks:[['React',80,2],['.NET',72,2],['Three.js',68,1],['Node.js',64,2]],
+  Tools:[['Git / GitLab CI',84,3],['Docker',62,1],['Figma',66,2],['Linux',58,2]]
+};
+function content(id){
+  switch(id){
+  case 'welkom':return '<div class="welcome"><h3>Hoi, welkom op RamazanOS</h3><p>Dit is mijn cv, verpakt als besturingssysteem. Zo kom je overal:</p><ol><li>Open een app via het bureaublad of het dock onderin.</li><li>Sleep vensters aan hun titelbalk, de gele knop minimaliseert, de groene maakt groot.</li><li>Typ in de <b>Terminal</b> <kbd>help</kbd> voor commando\'s.</li><li>De aan/uit-knop rechtsboven brengt je terug naar het bureau. <kbd>Esc</kbd> sluit het bovenste venster.</li></ol><button class="wbtn pri" type="button" data-go="over">Begin bij Over mij</button></div>';
+  case 'over':return '<div class="note"><p class="muted mono" style="font-size:12px">over-mij.txt · laatst bewerkt vandaag</p><h3>Over mij</h3><p>Ik ben Ramazan, student <b>HBO-ICT Software Engineering</b> aan Windesheim in Almere. Wat me drijft: software die niet alleen werkt, maar ook goed voelt. Strakke interfaces, vloeiende animaties en een backend die gewoon blijft draaien.</p><p>Naast mijn studie bouw ik eigen projecten om nieuwe technieken te leren, van 3D in de browser tot realtime dashboards. Ik werk graag in een team, stel veel vragen en lever liever iets af dat klopt dan iets dat snel is.</p><p>Ik zoek een stageplek waar ik mee kan bouwen aan echte producten.</p><div class="sig">Ramazan</div></div>';
+  case 'opleiding':return '<div class="study"><div class="ring"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="#e3e6ee" stroke-width="12"/><circle id="ringArc" cx="75" cy="75" r="62" fill="none" stroke="#3557ff" stroke-width="12" stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)"/></svg><b>120<small>van 240 EC</small></b></div><div><span class="pill">Jaar 3 van 4</span><h3 style="margin-top:10px">Studievoortgang</h3><ul class="tl"><li><span class="y">2024 – 2028</span><span class="w">HBO-ICT, Software Engineering</span><span class="d">Windesheim, Almere</span></li><li><span class="y">2025</span><span class="w">Propedeuse behaald</span><span class="d">60 EC binnen één jaar</span></li><li><span class="y">2020 – 2024</span><span class="w">Havo, Natuur &amp; Techniek</span><span class="d">Almere</span></li></ul></div></div>';
+  case 'skills':return '<div class="tabs" role="tablist">'+Object.keys(SKILLS).map((k,i)=>'<button type="button" role="tab" data-tab="'+k+'"'+(i?'':' class="on"')+'>'+k+'</button>').join('')+'</div><table class="mon"><thead><tr><th>Skill</th><th>Niveau</th><th style="text-align:right">%</th><th style="text-align:right">Jaren</th></tr></thead><tbody id="monBody"></tbody></table><div class="monfoot"><span id="monCount"></span><span>Eigen inschatting · live bijgewerkt</span></div>';
+  case 'projecten':return '<div class="finder"><div class="side"><div class="lbl">Favorieten</div><span class="on">Projecten</span><span>Recent</span><span>Downloads</span><div class="lbl">Locaties</div><span>GitLab Windesheim</span><span>GitHub</span></div><div class="fmain" id="fmain"></div></div>';
+  case 'ervaring':return '<div class="cal"><div class="ev"><span class="yr">2025<br>nu</span><div class="blk" style="background:#ffe8ec;border-color:#e5364f"><b>Freelance webdeveloper</b><span>Websites en webapps voor lokale ondernemers, van ontwerp tot livegang.</span><br><em>doorlopend</em></div></div><div class="ev"><span class="yr">2024<br>2025</span><div class="blk" style="background:#e8ebff;border-color:#3557ff"><b>Medewerker IT-support</b><span>Autobedrijf in Almere: hardware, accounts en interne tools.</span><br><em>bijbaan · 16 uur per week</em></div></div><div class="ev"><span class="yr">2022<br>2024</span><div class="blk" style="background:#e3f8f1;border-color:#11a37f"><b>Bijbaan verkoop</b><span>Klantcontact, kassa en samenwerken onder druk.</span><br><em>weekenden</em></div></div></div>';
+  case 'contact':return '<form class="mail" id="mailF" autocomplete="off"><div class="mrow"><label>Aan</label><output id="mTo">'+EMAIL+'</output><button class="wbtn" type="button" id="mCopyAddr">Kopieer adres</button></div><div class="mrow"><label for="mSub">Onderwerp</label><input id="mSub" type="text" value="Stageplek bij ons team"></div><textarea id="mBody" aria-label="Bericht">Hoi Ramazan,\n\nWe hebben je cv bekeken en willen graag kennismaken.\n\nGroet,\n</textarea></form><div class="mfoot"><button class="wbtn pri" type="button" id="mCopy">Kopieer bericht</button><a class="wbtn" href="https://github.com" target="_blank" rel="noopener">GitHub</a><a class="wbtn" href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a><span class="muted">RamazanOS verstuurt zelf geen mail. Kopieer het bericht en plak het in je eigen mailprogramma.</span></div>';
+  case 'terminal':return '<div class="term" id="term"><div class="o ac">RamazanOS 1.0 · typ help</div><form id="tF"><b>ramazan@os:~$</b><input id="tI" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" enterkeyhint="send" aria-label="Terminalcommando"><button type="button" id="tGo" class="tgo" aria-label="Commando uitvoeren">Enter ↵</button></form></div>';
+  case 'prullenbak':return '<div class="empty">'+SVG.trash+'<b style="color:#3a3d46">De prullenbak is leeg</b><span>Ramazan gooit geen code weg. Alleen bugs.</span></div>';
+  }
+}
+function initApp(id,el){
+  el.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>openApp(b.dataset.go)));
+  if(id==='opleiding'){requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=el.querySelector('#ringArc');if(a)a.style.strokeDashoffset=389.6*.5;}));}
+  if(id==='skills'){let tab='Talen';const body=el.querySelector('#monBody'),cnt=el.querySelector('#monCount');
+    function rows(){body.innerHTML=SKILLS[tab].map(s=>'<tr><td class="n">'+s[0]+'</td><td><div class="bar"><i style="width:0"></i></div></td><td class="p">0</td><td class="p">'+s[2]+'</td></tr>').join('');cnt.textContent=SKILLS[tab].length+' processen';tick(true);}
+    function tick(first){const trs=body.querySelectorAll('tr');SKILLS[tab].forEach((s,i)=>{const v=Math.max(5,Math.min(99,s[1]+(first?0:Math.round((Math.random()-.5)*8))));const tr=trs[i];if(!tr)return;
+      requestAnimationFrame(()=>{tr.querySelector('.bar i').style.width=v+'%';tr.cells[2].textContent=v;});});}
+    el.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;el.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('on',x===b));rows();}));
+    rows();el._iv=setInterval(()=>{if($('#os').classList.contains('on'))tick(false);},1600);}
+  if(id==='projecten'){const fm=el.querySelector('#fmain');
+    const folderSVG=c=>'<svg viewBox="0 0 64 52"><path d="M2 8a4 4 0 0 1 4-4h16l5 5h31a4 4 0 0 1 4 4v33a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="'+c[0]+'"/><path d="M2 16a4 4 0 0 1 4-4h52a4 4 0 0 1 4 4v30a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="'+c[1]+'"/></svg>';
+    function list(){fm.innerHTML='<div class="crumb">Projecten · '+PROJ.length+' mappen</div><div class="folders">'+PROJ.map((p,i)=>'<button class="folder" type="button" data-p="'+i+'">'+folderSVG(p.c)+'<span>'+p.n+'</span></button>').join('')+'</div>';
+      fm.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>detail(+b.dataset.p)));}
+    function detail(i){const p=PROJ[i];fm.innerHTML='<div class="crumb"><button type="button" id="back">Projecten</button> / '+p.n+'</div><div class="pdet"><div class="shot" style="background:radial-gradient(circle at 30% 40%,'+p.c[1]+',transparent 60%),linear-gradient(135deg,'+p.c[0]+','+p.c[1]+')"></div><h4>'+p.n+'</h4><p>'+p.d+'</p><div class="chips">'+p.t.map(x=>'<span class="pill">'+x+'</span>').join('')+'</div><a class="wbtn" href="https://github.com" target="_blank" rel="noopener">Bekijk code</a></div>';
+      fm.querySelector('#back').addEventListener('click',list);}
+    list();}
+  if(id==='contact'){const mt=el.querySelector('#mTo');
+    function copy(txt,btn,label){const done=()=>{btn.textContent='Gekopieerd';setTimeout(()=>btn.textContent=label,1500);};
+      try{navigator.clipboard.writeText(txt).then(done).catch(()=>{sel(mt);btn.textContent='Geselecteerd';});}catch(e){sel(mt);btn.textContent='Geselecteerd';}}
+    el.querySelector('#mCopyAddr').addEventListener('click',e=>copy(EMAIL,e.currentTarget,'Kopieer adres'));
+    el.querySelector('#mCopy').addEventListener('click',e=>copy('Aan: '+EMAIL+'\nOnderwerp: '+el.querySelector('#mSub').value+'\n\n'+el.querySelector('#mBody').value,e.currentTarget,'Kopieer bericht'));
+    el.querySelector('#mailF').addEventListener('submit',e=>e.preventDefault());}
+  if(id==='terminal'){const term=el.querySelector('#term'),f=el.querySelector('#tF'),inp=el.querySelector('#tI');const hist=[];let hi=0;
+    const out=(t,c)=>{const d=document.createElement('div');d.className='o'+(c?' '+c:'');d.textContent=t;term.insertBefore(d,f);el.querySelector('.wbody').scrollTop=1e6;};
+    const alias={over:'over','over-mij':'over','overmij':'over',about:'over',ik:'over',bio:'over',welkom:'welkom',welcome:'welkom',
+      opleiding:'opleiding',opleidingen:'opleiding',studie:'opleiding',school:'opleiding',education:'opleiding',
+      skills:'skills',skill:'skills',vaardigheden:'skills',talen:'skills',stack:'skills',
+      projecten:'projecten',project:'projecten',projects:'projecten',portfolio:'projecten',
+      ervaring:'ervaring',werk:'ervaring',werkervaring:'ervaring',experience:'ervaring',agenda:'ervaring',
+      contact:'contact',mail:'contact',email:'contact','e-mail':'contact',
+      prullenbak:'prullenbak',trash:'prullenbak',terminal:'terminal'};
+    function resolve(str){
+      let w=str.toLowerCase().trim().replace(/^(sudo\s+)?(open|cd|cat|start|run|launch|less|more|vim|nano|code)\s+/,'').replace(/^\.?\/+/,'').replace(/\/+$/,'').replace(/^~\/?/,'').replace(/\.(app|txt|ics|md|exe|sh)$/,'').trim();
+      if(alias[w])return alias[w];
+      if(w.length>=3){const k=Object.keys(alias).find(a=>a.startsWith(w)||w.startsWith(a));if(k)return alias[k];}
+      return null;}
+    f.addEventListener('submit',e=>e.preventDefault());
+    const goBtn=el.querySelector('#tGo');if(goBtn)goBtn.addEventListener('click',()=>{run();try{inp.focus({preventScroll:true});}catch(_){}});
+    function run(){const raw=inp.value.trim();inp.value='';if(!raw)return;hist.push(raw);hi=hist.length;
+      const d=document.createElement('div');d.className='o c';d.innerHTML='<b>$</b> ';d.appendChild(document.createTextNode(raw));term.insertBefore(d,f);
+      const lc=raw.toLowerCase().replace(/\s+/g,' '),parts=lc.split(' '),arg=parts.slice(1).join(' ');
+      const target=(lc==='ls'||lc.startsWith('ls ')||lc==='help'||lc==='clear'||lc==='exit')?null:resolve(lc);
+      if(lc==='help'){out('commando\'s:');out('  over · opleiding · skills · projecten · ervaring · contact','ac');out('  open <app> · ls · whoami · date · neofetch · clear · exit · shutdown','ac');out('tip: Tab vult aan, pijltje omhoog haalt je vorige commando terug');}
+      else if(target){openApp(target);out(APPS[target].t+' geopend','ok');}
+      else if(['open','cd','cat','start','run'].includes(parts[0])){out('niet gevonden: '+(arg||'(leeg)')+' · typ ls voor wat er is','er');}
+      else if(lc==='ls'||lc==='ls -la'){out('over  opleiding  skills  projecten  ervaring  contact  prullenbak','ac');out('typ een naam om de app te openen','');}
+      else if(lc==='whoami'){out('ramazan · software engineer in opleiding');}
+      else if(lc==='date'){out(new Date().toLocaleString('nl-NL',{dateStyle:'full',timeStyle:'short'}));}
+      else if(lc==='neofetch'){['ramazan@os','----------','OS: RamazanOS 1.0','Host: Windesheim Almere','Opleiding: HBO-ICT SE, jaar 3','Shell: TypeScript, C#','Packages: 120 EC'].forEach((l,i)=>out(l,i?'':'ac'));}
+      else if(lc==='clear'){term.querySelectorAll('.o').forEach(n=>n.remove());}
+      else if(lc==='exit'){closeApp('terminal');}
+      else if(lc==='shutdown'||lc==='logout'){logout();}
+      else if(lc.startsWith('sudo hire')){out('[sudo] wachtwoord voor recruiter: ********');out('Toegang verleend. Goede keuze.','ok');setTimeout(()=>openApp('contact'),500);}
+      else if(lc.startsWith('rm ')){out('Ho. Dit cv blijft staan.','er');}
+      else out('command not found: '+parts[0]+' · typ help','er');}
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.keyCode===13){e.preventDefault();e.stopPropagation();run();return;}if(e.key==='Tab'){e.preventDefault();const v=inp.value.toLowerCase();const pre=v.match(/^(open |cd |cat )?/)[0],rest=v.slice(pre.length);if(rest){const m=['over','opleiding','skills','projecten','ervaring','contact','prullenbak','help','neofetch','whoami','clear','shutdown'].find(x=>x.startsWith(rest));if(m)inp.value=pre+m;}return;}if(e.key==='ArrowUp'&&hist.length){hi=Math.max(0,hi-1);inp.value=hist[hi];e.preventDefault();}if(e.key==='ArrowDown'&&hist.length){hi=Math.min(hist.length,hi+1);inp.value=hist[hi]||'';e.preventDefault();}});
+    setTimeout(()=>{try{inp.focus({preventScroll:true});}catch(e){}},250);}
+}
+function sel(node){const r=document.createRange();r.selectNodeContents(node);const s=getSelection();s.removeAllRanges();s.addRange(r);}
+
+/* ============ window manager ============ */
+const wins={};let z=10,cascade=0;
+function focusWin(id){Object.entries(wins).forEach(([k,w])=>w.classList.toggle('blur',k!==id));if(wins[id]){wins[id].style.zIndex=++z;}}
+function openApp(id){
+  if(!$('#os').classList.contains('on')){login(id);return;}
+  if(wins[id]){wins[id].classList.remove('min');focusWin(id);return;}
+  const a=APPS[id],W=Math.min(a.w,innerWidth-24),H=Math.min(a.h,innerHeight-140);
+  const el=document.createElement('section');el.className='win opening';el.setAttribute('role','dialog');el.setAttribute('aria-label',a.t);
+  const x=Math.max(8,Math.min(innerWidth-W-8,(innerWidth-W)/2+((cascade%5)-2)*34+60)),y=Math.max(42,Math.min(innerHeight-H-90,(innerHeight-H)/2-20+((cascade%5)-2)*26));cascade++;
+  el.style.cssText='left:'+x+'px;top:'+y+'px;width:'+W+'px;height:'+H+'px';
+  el.innerHTML='<div class="tbar"><div class="dots"><i role="button" tabindex="0" aria-label="Sluiten" data-a="close"></i><i role="button" tabindex="0" aria-label="Minimaliseren" data-a="min"></i><i role="button" tabindex="0" aria-label="Maximaliseren" data-a="max"></i></div><span class="ttl">'+a.t+'</span></div><div class="wbody">'+content(id)+'</div>';
+  $('#wins').appendChild(el);wins[id]=el;
+  el.addEventListener('pointerdown',()=>focusWin(id));
+  el.querySelectorAll('[data-a]').forEach(d=>{const act=()=>{const k=d.dataset.a;if(k==='close')closeApp(id);else if(k==='min'){el.classList.add('min');}else el.classList.toggle('max');};
+    d.addEventListener('click',e=>{e.stopPropagation();act();});d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}});});
+  const tb=el.querySelector('.tbar');let drag=null;
+  tb.addEventListener('pointerdown',e=>{if(isSmall()||e.target.closest('[data-a]')||el.classList.contains('max'))return;drag={x:e.clientX,y:e.clientY,l:el.offsetLeft,t:el.offsetTop};tb.setPointerCapture(e.pointerId);});
+  tb.addEventListener('pointermove',e=>{if(!drag)return;const nl=Math.max(-W+120,Math.min(innerWidth-120,drag.l+e.clientX-drag.x)),nt=Math.max(32,Math.min(innerHeight-60,drag.t+e.clientY-drag.y));el.style.left=nl+'px';el.style.top=nt+'px';});
+  tb.addEventListener('pointerup',()=>drag=null);tb.addEventListener('dblclick',()=>{if(!isSmall())el.classList.toggle('max');});
+  initApp(id,el);focusWin(id);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove('opening')));
+  if(dockBtns[id])dockBtns[id].classList.add('open');
+}
+function closeApp(id){const el=wins[id];if(!el)return;clearInterval(el._iv);el.classList.add('opening');delete wins[id];if(dockBtns[id])dockBtns[id].classList.remove('open');setTimeout(()=>el.remove(),220);}
+function topWin(){let best=null,bz=-1;Object.entries(wins).forEach(([k,w])=>{if(!w.classList.contains('min')&&+w.style.zIndex>bz){bz=+w.style.zIndex;best=k;}});return best;}
+$('#mHelp').addEventListener('click',()=>openApp('welkom'));
+$('#pwr').addEventListener('click',()=>logout());
+addEventListener('keydown',e=>{if(e.key!=='Escape'||!$('#os').classList.contains('on'))return;const t=topWin();if(t)closeApp(t);else logout();});
+function clock(){$('#clock').textContent=new Date().toLocaleString('nl-NL',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
+clock();setInterval(clock,20000);
+
+/* ============ toast & tip ============ */
+const toastEl=$('#toast');let toastT;
+function toast(t){toastEl.textContent=t;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toastEl.classList.remove('show'),2600);}
+document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>login(b.dataset.open)));
+
+/* ============ login / logout (filled in by 3D, with fallback) ============ */
+let pendingApp=null,busy=false;
+function showOS(app){const os=$('#os');os.classList.add('on');os.setAttribute('aria-hidden','false');document.body.classList.add('os');
+  setTimeout(()=>{openApp(app||'welkom');},reduce?0:180);}
+function hideOS(){const os=$('#os');os.classList.remove('on');os.setAttribute('aria-hidden','true');Object.keys(wins).forEach(closeApp);}
+let login=app=>{showOS(app);},logout=()=>{hideOS();document.body.classList.remove('os');};
+window.__login=a=>login(a);
+
+if(typeof THREE==='undefined')return;
+
+/* ============ 3D room ============ */
+const canvas=$('#scene');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+const small0=isSmall();
+renderer.shadowMap.enabled=!small0;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0d0c11);scene.fog=new THREE.Fog(0x0d0c11,14,30);
+const camera=new THREE.PerspectiveCamera(40,1,.05,80);
+function resize(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.fov=camera.aspect<.8?50:40;camera.updateProjectionMatrix();}
+resize();addEventListener('resize',resize);
+const R=Math.random,V=(x,y,z)=>new THREE.Vector3(x,y,z),UP=V(0,1,0);
+function ctex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.anisotropy=4;t.userData={c,draw};return t;}
+const std=(o)=>new THREE.MeshStandardMaterial(o);
+function cylBetween(a,b,r,mat){const len=a.distanceTo(b);const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,16),mat);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(UP,b.clone().sub(a).normalize());m.castShadow=true;return m;}
+const shadow=o=>{o.traverse(n=>{if(n.isMesh){n.castShadow=true;n.receiveShadow=true;}});return o;};
+
+/* lights */
+scene.add(new THREE.AmbientLight(0x5a5f88,.32));
+const hemi=new THREE.HemisphereLight(0x8a8fd0,0x1a120c,.25);scene.add(hemi);
+const moon=new THREE.DirectionalLight(0x8fa6ff,.35);moon.position.set(4,6,-6);scene.add(moon);
+
+/* room */
+const wall=new THREE.Mesh(new THREE.PlaneGeometry(30,14),std({color:0x1b1a22,roughness:1}));wall.position.set(0,3,-2.7);wall.receiveShadow=true;scene.add(wall);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(30,20),std({color:0x141218,roughness:1}));floor.rotation.x=-Math.PI/2;floor.position.y=-3.4;scene.add(floor);
+const sky=ctex(1024,512,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#0a0f2e');gr.addColorStop(.7,'#26285a');gr.addColorStop(1,'#5a3a6a');g.fillStyle=gr;g.fillRect(0,0,w,h);
+  for(let i=0;i<140;i++){g.fillStyle='rgba(255,255,255,'+(R()*.7)+')';g.fillRect(R()*w,R()*h*.6,1.5,1.5);}
+  g.fillStyle='#fff6e0';g.beginPath();g.arc(w*.78,h*.22,26,0,7);g.fill();g.fillStyle='rgba(255,246,224,.15)';g.beginPath();g.arc(w*.78,h*.22,60,0,7);g.fill();
+  let x=0;while(x<w){const bw=30+R()*70,bh=h*(.15+R()*.45);g.fillStyle='#0b0b17';g.fillRect(x,h-bh,bw,bh);
+    for(let yy=h-bh+8;yy<h-6;yy+=14)for(let xx=x+6;xx<x+bw-8;xx+=11){if(R()<.32){g.fillStyle=R()<.8?'rgba(255,205,140,.85)':'rgba(150,190,255,.8)';g.fillRect(xx,yy,5,7);}}x+=bw+2;}});
+const win=new THREE.Mesh(new THREE.PlaneGeometry(6.2,3.1),new THREE.MeshBasicMaterial({map:sky,toneMapped:false}));win.position.set(1.4,3.25,-2.68);scene.add(win);
+const frameM=std({color:0x2a2833,roughness:.8});
+[[0,1.6,6.5,.14],[0,-1.6,6.5,.14],[-3.18,0,.14,3.3],[3.18,0,.14,3.3],[0,0,.07,3.2]].forEach(([x,y,w,h])=>{const f=new THREE.Mesh(new THREE.BoxGeometry(w,h,.12),frameM);f.position.set(1.4+x,3.25+y,-2.62);scene.add(f);});
+const sill=new THREE.Mesh(new THREE.BoxGeometry(6.8,.12,.4),frameM);sill.position.set(1.4,1.62,-2.5);scene.add(sill);
+
+/* desk */
+const wood=ctex(1024,512,(g,w,h)=>{g.fillStyle='#5b3a24';g.fillRect(0,0,w,h);for(let i=0;i<220;i++){const y=R()*h;g.strokeStyle=R()<.5?'rgba(30,16,8,'+(R()*.35)+')':'rgba(150,100,60,'+(R()*.18)+')';g.lineWidth=1+R()*2.5;g.beginPath();g.moveTo(0,y);
+  for(let x=0;x<=w;x+=40)g.lineTo(x,y+Math.sin(x*.01+i)*6);g.stroke();}});
+wood.wrapS=wood.wrapT=THREE.RepeatWrapping;
+const desk=new THREE.Mesh(new THREE.BoxGeometry(9.4,.22,4.6),std({map:wood,roughness:.55,metalness:.05}));desk.position.set(0,-.11,0);desk.receiveShadow=true;desk.castShadow=true;scene.add(desk);
+const legM=std({color:0x1a1a1f,roughness:.5,metalness:.6});
+[[-4.4,-1.9],[4.4,-1.9],[-4.4,1.9],[4.4,1.9]].forEach(([x,z])=>{const l=new THREE.Mesh(new THREE.BoxGeometry(.16,3.3,.16),legM);l.position.set(x,-1.87,z);scene.add(l);});
+
+/* interactive groups */
+const targets=[];
+function interactive(g,key,label){g.userData.key=key;g.userData.label=label;targets.push(g);g.traverse(n=>{if(n.isMesh&&n.material&&n.material.emissive){n.userData.e0=n.material.emissive.clone();}});scene.add(g);return g;}
+
+/* laptop */
+const alu=std({color:0xb9bcc4,metalness:.85,roughness:.32});
+const laptop=new THREE.Group();laptop.position.set(0,0,.25);
+const base=new THREE.Mesh(new THREE.BoxGeometry(3.1,.12,2.05),alu);base.position.y=.06;laptop.add(base);
+const kb=ctex(1024,384,(g,w,h)=>{g.fillStyle='#1c1d22';g.fillRect(0,0,w,h);const rows=[14,14,13,12,10];let y=18;
+  rows.forEach((n,r)=>{const kw=(w-36)/14;let x=18+(14-n)*kw/2;for(let k=0;k<n;k++){const ww=(r===4&&k===4)?kw*4:kw;g.fillStyle='#2c2d33';g.beginPath();g.roundRect?g.roundRect(x+3,y+3,ww-6,58,8):g.rect(x+3,y+3,ww-6,58);g.fill();x+=ww;if(r===4&&k===4)k+=3;}y+=70;});});
+const keys=new THREE.Mesh(new THREE.PlaneGeometry(2.8,1.05),std({map:kb,roughness:.7}));keys.rotation.x=-Math.PI/2;keys.position.set(0,.122,-.33);laptop.add(keys);
+const pad=new THREE.Mesh(new THREE.PlaneGeometry(1.05,.62),std({color:0xa9adb5,metalness:.7,roughness:.25}));pad.rotation.x=-Math.PI/2;pad.position.set(0,.122,.6);laptop.add(pad);
+const hinge=new THREE.Group();hinge.position.set(0,.12,-1.0);laptop.add(hinge);
+const bezel=std({color:0x0b0b0e,roughness:.4});
+const lid=new THREE.Mesh(new THREE.BoxGeometry(3.1,2.0,.06),[alu,alu,alu,alu,bezel,alu]);lid.position.set(0,1.0,0);hinge.add(lid);
+/* screen texture */
+const SW=1280,SH=800;
+const screenTex=ctex(SW,SH,()=>{});screenTex.minFilter=THREE.LinearFilter;
+const sg=screenTex.userData.c.getContext('2d');
+function wallpaper(g,w,h){const gr=g.createRadialGradient(w*.72,h*1.12,0,w*.72,h*1.12,h*1.3);
+  [[0,'#ffa45e'],[.22,'#ea5b68'],[.46,'#7b3d9e'],[.72,'#262a63'],[1,'#11143a']].forEach(([o,c])=>gr.addColorStop(o,c));g.fillStyle=gr;g.fillRect(0,0,w,h);
+  const s=g.createRadialGradient(w*.72,h*.8,0,w*.72,h*.8,h*.16);s.addColorStop(0,'rgba(255,226,184,.95)');s.addColorStop(.42,'rgba(255,226,184,.95)');s.addColorStop(.45,'rgba(255,200,140,.35)');s.addColorStop(1,'rgba(255,200,140,0)');g.fillStyle=s;g.fillRect(0,0,w,h);}
+function drawScreen(mode,p){const g=sg,w=SW,h=SH;
+  if(mode==='off'){g.fillStyle='#050507';g.fillRect(0,0,w,h);}
+  else if(mode==='boot'){g.fillStyle='#050507';g.fillRect(0,0,w,h);g.fillStyle='#fff';g.textAlign='center';g.font='italic 400 92px "Instrument Serif", Georgia, serif';g.fillText('RamazanOS',w/2,h/2);
+    g.fillStyle='#2a2b33';g.fillRect(w/2-150,h/2+60,300,6);g.fillStyle='#fff';g.fillRect(w/2-150,h/2+60,300*p,6);}
+  else{wallpaper(g,w,h);g.fillStyle='rgba(255,255,255,.07)';g.textAlign='left';g.font='italic 400 200px "Instrument Serif", Georgia, serif';g.fillText('RamazanOS',40,h-150);
+    g.fillStyle='rgba(246,246,248,.75)';g.fillRect(0,0,w,34);g.fillStyle='#18191d';g.font='600 17px "Geist", sans-serif';g.fillText('RamazanOS',40,23);
+    g.textAlign='right';g.font='500 15px "Geist Mono", monospace';g.fillText(new Date().toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'}),w-20,23);
+    const cols=['#f5a623','#3557ff','#11a37f','#3a8ef0','#e5364f','#2f8fe6','#22232a'];
+    cols.forEach((c,i)=>{g.fillStyle=c;const x=26+(i>4?100:0),y=60+(i%5)*110;g.beginPath();g.roundRect?g.roundRect(x+18,y,58,58,14):g.rect(x+18,y,58,58);g.fill();});
+    g.fillStyle='rgba(246,246,248,.45)';g.beginPath();g.roundRect?g.roundRect(w/2-260,h-82,520,70,20):g.rect(w/2-260,h-82,520,70);g.fill();
+    cols.forEach((c,i)=>{g.fillStyle=c;g.beginPath();g.roundRect?g.roundRect(w/2-245+i*72,h-72,54,54,13):g.rect(w/2-245+i*72,h-72,54,54);g.fill();});
+    if(p){g.fillStyle='rgba(15,16,22,.6)';g.beginPath();g.roundRect?g.roundRect(w/2-230,h/2-60,460,120,24):g.rect(w/2-230,h/2-60,460,120);g.fill();g.fillStyle='#fff';g.textAlign='center';
+      g.font='600 34px "Geist", sans-serif';g.fillText('Klik om in te loggen',w/2,h/2+2);g.font='400 20px "Geist Mono", monospace';g.fillStyle='rgba(255,255,255,.7)';g.fillText('gebruiker: recruiter',w/2,h/2+38);}}
+  screenTex.needsUpdate=true;}
+drawScreen('off');
+const screen=new THREE.Mesh(new THREE.PlaneGeometry(2.86,1.79),new THREE.MeshBasicMaterial({map:screenTex,toneMapped:false}));screen.position.set(0,1.02,.032);hinge.add(screen);
+hinge.rotation.x=Math.PI/2-.02;
+shadow(laptop);screen.castShadow=false;
+interactive(laptop,'laptop','Laptop · inloggen');
+const screenGlow=new THREE.PointLight(0x9fb0ff,0,6,2);screenGlow.position.set(0,1.2,1.2);scene.add(screenGlow);
+
+/* lamp */
+const lamp=new THREE.Group();const lampM=std({color:0x22242b,metalness:.6,roughness:.35});
+const lb=new THREE.Mesh(new THREE.CylinderGeometry(.48,.55,.12,32),lampM);lb.position.set(-3.3,.06,-1.1);lamp.add(lb);
+const pA=V(-3.3,.1,-1.1),pB=V(-3.3,2.6,-1.25),pC=V(-2.05,3.05,-.75);
+lamp.add(cylBetween(pA,pB,.05,lampM));lamp.add(cylBetween(pB,pC,.045,lampM));
+const jointM=new THREE.Mesh(new THREE.SphereGeometry(.09,16,12),lampM);jointM.position.copy(pB);lamp.add(jointM);
+const lampTarget=V(-.5,0,.4);
+const head=new THREE.Mesh(new THREE.ConeGeometry(.42,.62,32,1,true),std({color:0x22242b,metalness:.5,roughness:.4,side:THREE.DoubleSide}));
+head.position.copy(pC).add(V(0,-.15,0));head.quaternion.setFromUnitVectors(UP,head.position.clone().sub(lampTarget).normalize());lamp.add(head);
+const bulbM=new THREE.MeshStandardMaterial({color:0xfff1d6,emissive:0xffc070,emissiveIntensity:2.2});
+const bulb=new THREE.Mesh(new THREE.SphereGeometry(.13,16,12),bulbM);bulb.position.copy(head.position).add(lampTarget.clone().sub(head.position).normalize().multiplyScalar(.12));lamp.add(bulb);
+shadow(lamp);bulb.castShadow=false;head.castShadow=false;
+interactive(lamp,'lamp','Lamp · aan/uit');
+const spot=new THREE.SpotLight(0xffb76a,3.2,16,.78,.6,1.4);spot.position.copy(bulb.position);spot.target.position.copy(lampTarget);scene.add(spot);scene.add(spot.target);
+spot.castShadow=!small0;spot.shadow.mapSize.set(1024,1024);spot.shadow.bias=-.0008;spot.shadow.radius=4;
+const warm=new THREE.PointLight(0xffa860,.5,7,2);warm.position.copy(bulb.position);scene.add(warm);
+let lampOn=true;
+
+/* mug */
+const mug=new THREE.Group();mug.position.set(2.45,0,.95);
+const mugM=std({color:0x1f5d6b,roughness:.35});
+const mb=new THREE.Mesh(new THREE.CylinderGeometry(.3,.27,.72,32,1,true),mugM);mb.position.y=.36;mug.add(mb);
+const mbot=new THREE.Mesh(new THREE.CircleGeometry(.27,32),mugM);mbot.rotation.x=-Math.PI/2;mbot.position.y=.01;mug.add(mbot);
+const coffee=new THREE.Mesh(new THREE.CircleGeometry(.28,32),std({color:0x2a160a,roughness:.15}));coffee.rotation.x=-Math.PI/2;coffee.position.y=.6;mug.add(coffee);
+const handle=new THREE.Mesh(new THREE.TorusGeometry(.17,.045,12,32,Math.PI*1.2),mugM);handle.position.set(.31,.38,0);handle.rotation.z=-Math.PI*.6;mug.add(handle);
+const inner=new THREE.Mesh(new THREE.CylinderGeometry(.28,.26,.7,32,1,true),std({color:0xe8e2d8,roughness:.4,side:THREE.BackSide}));inner.position.y=.37;mug.add(inner);
+shadow(mug);interactive(mug,'mug','Koffie');
+const glowC=document.createElement('canvas');glowC.width=glowC.height=64;{const g=glowC.getContext('2d'),gr=g.createRadialGradient(32,32,0,32,32,32);gr.addColorStop(0,'rgba(255,255,255,.9)');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(0,0,64,64);}
+const glowT=new THREE.CanvasTexture(glowC);
+const steam=[];for(let i=0;i<7;i++){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowT,transparent:true,opacity:0,depthWrite:false,color:0xeeeeff}));s.userData.t=i/7;steam.push(s);scene.add(s);}
+let steamBoost=0;
+
+/* books */
+const books=new THREE.Group();books.position.set(3.35,0,-1.05);
+const spines=[['HBO-ICT','#2e3a8c'],['Algoritmen','#8c2e3a'],['C# in de praktijk','#1f6b54'],['Software Design','#b7862b']];
+let by=0;spines.forEach(([t,c],i)=>{const h=.22+R()*.1,w=1.7-i*.12+R()*.1,d=1.15+R()*.1;
+  const sp=ctex(512,64,(g,W,H)=>{g.fillStyle=c;g.fillRect(0,0,W,H);g.fillStyle='rgba(255,255,255,.85)';g.font='600 30px "Geist", sans-serif';g.textBaseline='middle';g.fillText(t,22,H/2+2);g.fillStyle='rgba(255,255,255,.4)';g.fillRect(W-40,10,4,H-20);});
+  const cm=std({color:c,roughness:.7}),pm=std({color:0xf1ebdd,roughness:.9});
+  const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),[pm,cm,cm,cm,std({map:sp,roughness:.7}),cm]);b.position.y=by+h/2;b.rotation.y=(R()-.5)*.25;books.add(b);by+=h;});
+shadow(books);interactive(books,'books','Boeken · opleiding');
+
+/* phone */
+const phone=new THREE.Group();phone.position.set(1.75,0,1.6);phone.rotation.y=-.35;
+const pb=new THREE.Mesh(new THREE.BoxGeometry(.58,.05,1.16),std({color:0x16171c,metalness:.5,roughness:.3}));pb.position.y=.025;phone.add(pb);
+const ptex=ctex(256,512,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#262a63');gr.addColorStop(1,'#ea5b68');g.fillStyle=gr;g.fillRect(0,0,w,h);
+  g.fillStyle='rgba(255,255,255,.92)';g.font='600 64px "Geist", sans-serif';g.textAlign='center';g.fillText('17:05',w/2,110);
+  g.fillStyle='rgba(255,255,255,.88)';g.beginPath();g.roundRect?g.roundRect(18,190,w-36,110,22):g.rect(18,190,w-36,110);g.fill();
+  g.fillStyle='#18191d';g.textAlign='left';g.font='600 22px "Geist", sans-serif';g.fillText('Nieuw bericht',36,232);g.fillStyle='#555';g.font='400 19px "Geist", sans-serif';g.fillText('Tik om contact op',36,264);g.fillText('te nemen',36,288);});
+const pscreen=new THREE.Mesh(new THREE.PlaneGeometry(.52,1.08),new THREE.MeshStandardMaterial({map:ptex,emissive:0xffffff,emissiveMap:ptex,emissiveIntensity:.7}));pscreen.rotation.x=-Math.PI/2;pscreen.position.y=.052;phone.add(pscreen);
+shadow(phone);interactive(phone,'phone','Telefoon · contact');
+
+/* sticky notes */
+const notes=new THREE.Group();notes.position.set(-2.1,0,1.45);
+[['TypeScript\nC#  SQL','#ffe36e',-.1,0],['React\n.NET','#ffa3c4',.25,.7],['Three.js\nDocker','#8fd8ff',-.2,1.4]].forEach(([t,c,r,x])=>{
+  const tx=ctex(256,256,(g,w,h)=>{g.fillStyle=c;g.fillRect(0,0,w,h);g.fillStyle='rgba(0,0,0,.08)';g.fillRect(0,0,w,26);g.fillStyle='#24252b';g.font='600 34px "Geist", sans-serif';t.split('\n').forEach((l,i)=>g.fillText(l,22,96+i*48));});
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(.62,.62),std({map:tx,roughness:.9}));m.rotation.x=-Math.PI/2;m.rotation.z=r;m.position.set(x-.7,.004+x*.001,0);m.receiveShadow=true;notes.add(m);});
+interactive(notes,'notes',"Memo's · skills");
+
+/* plant */
+const plant=new THREE.Group();plant.position.set(-3.75,0,.85);
+const pot=new THREE.Mesh(new THREE.CylinderGeometry(.36,.28,.62,24),std({color:0xd9d2c4,roughness:.85}));pot.position.y=.31;plant.add(pot);
+const soil=new THREE.Mesh(new THREE.CircleGeometry(.34,24),std({color:0x2b1d12}));soil.rotation.x=-Math.PI/2;soil.position.y=.6;plant.add(soil);
+const leafM=std({color:0x3f7a3a,roughness:.6,side:THREE.DoubleSide});const leaves=[];
+for(let i=0;i<9;i++){const l=new THREE.Mesh(new THREE.SphereGeometry(.22,12,8),leafM);l.scale.set(.45,1.6,.12);const a=i/9*Math.PI*2,tilt=.35+R()*.35;
+  const piv=new THREE.Group();piv.position.y=.6;piv.rotation.set(Math.cos(a)*tilt,a,Math.sin(a)*tilt);l.position.y=.32;piv.add(l);plant.add(piv);leaves.push(piv);}
+shadow(plant);interactive(plant,'plant','Plant');
+
+/* ============ interaction ============ */
+const ray=new THREE.Raycaster(),pt=new THREE.Vector2(),tip=$('#tip');let hover=null;
+const mouse={x:0,y:0};
+function findKey(o){while(o&&!o.userData.key)o=o.parent;return o;}
+function setHover(g){if(hover===g)return;
+  [hover,g].forEach((h,k)=>{if(!h)return;h.traverse(n=>{if(n.isMesh&&n.userData.e0){n.material.emissive.copy(k?new THREE.Color(0x3a2a14):n.userData.e0);}});});
+  hover=g;canvas.style.cursor=g?'pointer':'default';tip.hidden=!g;if(g)tip.textContent=g.userData.label;}
+canvas.addEventListener('pointermove',e=>{mouse.x=e.clientX/innerWidth-.5;mouse.y=e.clientY/innerHeight-.5;
+  if(document.body.classList.contains('os')||busy)return;
+  pt.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(pt,camera);const h=ray.intersectObjects(targets,true);
+  setHover(h.length?findKey(h[0].object):null);tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';});
+canvas.addEventListener('pointerleave',()=>setHover(null));
+canvas.addEventListener('click',e=>{if(document.body.classList.contains('os')||busy)return;
+  pt.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(pt,camera);const h=ray.intersectObjects(targets,true);if(!h.length)return;
+  const k=findKey(h[0].object).userData.key;
+  if(k==='laptop')login('welkom');else if(k==='books')login('opleiding');else if(k==='notes')login('skills');else if(k==='phone')login('contact');
+  else if(k==='lamp'){lampOn=!lampOn;toast(lampOn?'Lamp aan':'Lamp uit. Het scherm geeft nu het meeste licht.');}
+  else if(k==='mug'){steamBoost=1;toast('Koffie bijgevuld. Productiviteit +12%.');}
+  else if(k==='plant'){plantWiggle=1;toast('De plant groeit, net als mijn skills.');}});
+let plantWiggle=0;
+
+/* ============ camera ============ */
+const look=V(0,.8,0),camPos=V();
+function overview(){const port=camera.aspect<.8;return port?{p:V(0,7.4,13.2),l:V(-.1,2.3,-.2)}:{p:V(.6,3.5,7.6),l:V(-.3,.85,-.1)};}
+camPos.copy(overview().p).add(V(0,1.5,3));look.copy(overview().l);
+let tween=null;
+const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+function flyTo(p,l,dur,cb){tween={p0:camPos.clone(),l0:look.clone(),p1:p,l1:l,t:0,dur:reduce?.01:dur,cb};}
+function screenView(){screen.updateMatrixWorld();const c=new THREE.Vector3();screen.getWorldPosition(c);const n=new THREE.Vector3();screen.getWorldDirection(n);
+  const tanH=Math.tan(THREE.MathUtils.degToRad(camera.fov)/2);const dH=(1.79/2)/tanH,dW=(2.86/2)/(tanH*camera.aspect);const d=Math.min(dH,dW)*.96;return {p:c.clone().addScaledVector(n,d),l:c};}
+let ready=false;
+login=function(app){if(busy)return;if(document.body.classList.contains('os')){openApp(app);return;}
+  if(!ready){pendingApp=app||'welkom';return;}
+  busy=true;setHover(null);document.body.classList.add('os');const v=screenView();
+  flyTo(v.p,v.l,1.5,()=>{showOS(app);busy=false;rendering=false;});};
+logout=function(){if(busy)return;busy=true;rendering=true;hideOS();setTimeout(()=>{document.body.classList.remove('os');const o=overview();flyTo(o.p,o.l,1.3,()=>{busy=false;});},reduce?0:300);};
+
+/* ============ loop ============ */
+let rendering=true,bootT=-1,lastMin=-1;
+const clockT=new THREE.Clock();
+const fontsReady=document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve();
+function frame(){
+  requestAnimationFrame(frame);
+  const rdt=Math.min(clockT.getDelta(),.25),dt=Math.min(rdt,.05),t=clockT.elapsedTime;
+  if(!rendering)return;
+  /* intro: lid opens, screen boots */
+  const lidT=Math.min(1,Math.max(0,(t-.5)/1.6));const target=Math.PI/2-.02-(Math.PI/2+.2)*ease(lidT);
+  hinge.rotation.x=reduce?-.2:target;
+  if(lidT>=1&&bootT<0)bootT=t;
+  if(bootT>=0){const b=(t-bootT)/1.4;if(b<1){drawScreen('boot',b);screenGlow.intensity=.4*b;}
+    else if(!ready){ready=true;fontsReady.then(()=>drawScreen('desk',1));drawScreen('desk',1);screenGlow.intensity=.9;if(pendingApp){const a=pendingApp;pendingApp=null;login(a);}}
+    else{const m=new Date().getMinutes();if(m!==lastMin){lastMin=m;drawScreen('desk',1);}}}
+  /* lamp */
+  const lampTarget_=lampOn?1:0;spot.intensity+=((lampOn?3.2:0)-spot.intensity)*.15;warm.intensity=spot.intensity*.16;bulbM.emissiveIntensity=lampOn?2.2:.05;
+  /* steam */
+  steamBoost*=.985;steam.forEach(s=>{s.userData.t+=dt*(.18+steamBoost*.5);if(s.userData.t>1)s.userData.t-=1;const u=s.userData.t;
+    s.position.set(2.45+Math.sin(u*6+t)*.08,.7+u*1.1,.95+Math.cos(u*5)*.05);const sc=.25+u*.5;s.scale.set(sc,sc,1);s.material.opacity=Math.sin(u*Math.PI)*(.12+steamBoost*.25);});
+  /* plant */
+  plantWiggle*=.96;leaves.forEach((l,i)=>{l.rotation.y=i/9*Math.PI*2+Math.sin(t*1.2+i)*.03+Math.sin(t*14+i)*plantWiggle*.15;});
+  /* phone notification pulse */
+  pscreen.material.emissiveIntensity=.55+Math.max(0,Math.sin(t*2.2))*.35;
+  /* camera */
+  if(tween){tween.t+=rdt/tween.dur;const k=ease(Math.min(1,tween.t));camPos.lerpVectors(tween.p0,tween.p1,k);look.lerpVectors(tween.l0,tween.l1,k);
+    if(tween.t>=1){const cb=tween.cb;tween=null;if(cb)cb();}}
+  else if(!document.body.classList.contains('os')){const o=overview();const tgt=o.p.clone().add(V(mouse.x*1.4,-mouse.y*.7,0));camPos.lerp(tgt,reduce?.2:.04);look.lerp(o.l,.05);}
+  camera.position.copy(camPos);camera.lookAt(look);
+  renderer.render(scene,camera);
+}
+frame();
+})();
+</script>
+
+</body>
+</html>
