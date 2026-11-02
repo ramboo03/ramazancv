@@ -4,8 +4,8 @@
 <title>RamazanOS</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Ramazan, software engineer in opleiding (HBO-ICT, Windesheim Almere). Interactief 3D-portfolio: log in op RamazanOS.">
-<meta property="og:title" content="RamazanOS · portfolio van Ramazan">
+<meta name="description" content="Ramazan Inan, junior software developer uit Lelystad. Laatste jaar HBO-ICT Software Engineering aan Windesheim. Interactief 3D-portfolio: log in op RamazanOS.">
+<meta property="og:title" content="RamazanOS · portfolio van Ramazan Inan">
 <meta property="og:description" content="Interactief 3D-portfolio. Klik op de laptop en log in.">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#0d0c11">
@@ -124,7 +124,7 @@ body.os .legend{opacity:0}
 .study{display:grid;grid-template-columns:150px 1fr;gap:24px;align-items:start}
 .ring{position:relative;width:150px;height:150px}
 .ring svg{width:150px;height:150px;transform:rotate(-90deg)}
-.ring b{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:30px;letter-spacing:-.03em;line-height:1.05}
+.ring b{position:absolute;inset:0;display:grid;place-content:center;text-align:center;font-size:26px;letter-spacing:-.03em;line-height:1.05}
 .ring b small{display:block;font-size:11px;font-weight:500;color:var(--wmute);letter-spacing:0}
 .tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
 .tl li{display:grid;grid-template-columns:92px 1fr;gap:2px 12px}
@@ -138,6 +138,9 @@ body.os .legend{opacity:0}
 .mon{width:100%;border-collapse:collapse;font-size:13px}
 .mon th{text-align:left;font-weight:500;color:var(--wmute);font-size:11px;text-transform:uppercase;letter-spacing:.06em;padding:6px 8px;border-bottom:1px solid var(--line)}
 .mon td{padding:9px 8px;border-bottom:1px solid #eceef2;font-variant-numeric:tabular-nums}
+.mon{color:var(--wtext);font-size:13px}
+.mon td{color:var(--wtext)}
+.mon td.muted{color:var(--wmute)}
 .mon td.n{font-weight:600}
 .mon .bar{height:7px;background:#e9ebf0;border-radius:6px;overflow:hidden;min-width:90px}
 .mon .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cobalt),#7a8cff);border-radius:6px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
@@ -257,7 +260,9 @@ body.os .legend{opacity:0}
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isSmall=()=>innerWidth<760;
 const $=s=>document.querySelector(s);
-const EMAIL='ramazan@voorbeeld.nl';
+const EMAIL='ramazaninan03@outlook.com';
+const LINKEDIN='https://www.linkedin.com/in/ramazan-inan-645018223/';
+const GITHUB='https://github.com/ramboo03';
 
 /* ============ icons ============ */
 const SVG={
@@ -292,43 +297,42 @@ DOCK.forEach(id=>{if(id==='|'){const s=document.createElement('span');s.classNam
 
 /* ============ app content ============ */
 const PROJ=[
-  {n:'Showroom 3D',d:'Interactieve autoconfigurator in de browser. Je bekijkt een auto rondom, wisselt live van lakkleur en velgen en ziet de prijs direct meelopen.',t:['Three.js','React','TypeScript'],c:['#1d2a5c','#3557ff']},
-  {n:'StudyFlow',d:'Planner voor studenten die deadlines uit het rooster haalt en automatisch een realistische weekplanning voorstelt.',t:['.NET','C#','SQL'],c:['#0f5a48','#4ee0b0']},
-  {n:'Pulse Dashboard',d:'Realtime dashboard voor sensordata via WebSockets. Gebouwd in een projectteam van vijf, met Docker voor de hele stack.',t:['TypeScript','WebSockets','Docker'],c:['#5c1d36','#ff7a8a']},
-  {n:'Shader Lab',d:'Verzameling eigen GLSL-experimenten: noise-velden, deeltjessystemen en post-processing effecten.',t:['GLSL','WebGL'],c:['#3e2a6e','#b69bff']}
+  {n:'RamazanOS',w:'Eigen project · 2026',d:'Dit portfolio. Een 3D-bureau in de browser waarin je via de laptop inlogt op een zelfgebouwd mini-besturingssysteem met versleepbare vensters en een werkende terminal.',t:['Three.js','JavaScript','HTML','CSS'],c:['#1d2a5c','#3557ff'],url:'https://github.com/ramboo03/ramazancv'},
+  {n:'TenCate',w:'Stage softwareontwikkeling · 2026',d:'Meewerkstage softwareontwikkeling in Nijverdal. Ik werk met Ignition, PLC-programmering, OPC UA en Microsoft SQL Server.',t:['Ignition','PLC','OPC UA','SQL Server'],c:['#0f5a48','#4ee0b0']},
+  {n:'MMC IT Solutions',w:'Stage junior webontwikkelaar · 2023',d:'Stage bij een maatwerk-softwarebedrijf in Lelystad, waar ik werkte met React Native, React.js, Python en het Django REST framework.',t:['React Native','React.js','Python','Django REST'],c:['#5c1d36','#ff7a8a']},
+  {n:'SenS Online Solutions',w:'Stage programmeren · 2022',d:'Stage tijdens mijn mbo-opleiding Software Development, bij een online bureau in Almere.',t:['Programmeren','Web'],c:['#3e2a6e','#b69bff']}
 ];
 const SKILLS={
-  Talen:[['TypeScript',82,3],['C#',78,2],['SQL',74,2],['Java',60,1],['Python',58,2],['GLSL',45,1]],
-  Frameworks:[['React',80,2],['.NET',72,2],['Three.js',68,1],['Node.js',64,2]],
-  Tools:[['Git / GitLab CI',84,3],['Docker',62,1],['Figma',66,2],['Linux',58,2]]
+  Development:[['React.js','MMC IT Solutions'],['React Native','MMC IT Solutions'],['JavaScript','Opleiding'],['Python','MMC IT Solutions'],['Django REST framework','MMC IT Solutions'],['PHP','Opleiding'],['HTML','Opleiding'],['CSS','Opleiding'],['WordPress','Opleiding']],
+  Data:[['Microsoft SQL Server','TenCate'],['MySQL','Opleiding'],['Databases','Opleiding']],
+  Industrieel:[['Ignition','TenCate'],['PLC-programmering','TenCate'],['OPC UA','TenCate'],['Technische tekeningen','TenCate']],
+  Overig:[['Analytisch denkvermogen',''],['Techniek',''],['Strategie',''],['Marketing','']]
 };
 function content(id){
   switch(id){
   case 'welkom':return '<div class="welcome"><h3>Hoi, welkom op RamazanOS</h3><p>Dit is mijn cv, verpakt als besturingssysteem. Zo kom je overal:</p><ol><li>Open een app via het bureaublad of het dock onderin.</li><li>Sleep vensters aan hun titelbalk, de gele knop minimaliseert, de groene maakt groot.</li><li>Typ in de <b>Terminal</b> <kbd>help</kbd> voor commando\'s.</li><li>De aan/uit-knop rechtsboven brengt je terug naar het bureau. <kbd>Esc</kbd> sluit het bovenste venster.</li></ol><button class="wbtn pri" type="button" data-go="over">Begin bij Over mij</button></div>';
-  case 'over':return '<div class="note"><p class="muted mono" style="font-size:12px">over-mij.txt · laatst bewerkt vandaag</p><h3>Over mij</h3><p>Ik ben Ramazan, student <b>HBO-ICT Software Engineering</b> aan Windesheim in Almere. Wat me drijft: software die niet alleen werkt, maar ook goed voelt. Strakke interfaces, vloeiende animaties en een backend die gewoon blijft draaien.</p><p>Naast mijn studie bouw ik eigen projecten om nieuwe technieken te leren, van 3D in de browser tot realtime dashboards. Ik werk graag in een team, stel veel vragen en lever liever iets af dat klopt dan iets dat snel is.</p><p>Ik zoek een stageplek waar ik mee kan bouwen aan echte producten.</p><div class="sig">Ramazan</div></div>';
-  case 'opleiding':return '<div class="study"><div class="ring"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="#e3e6ee" stroke-width="12"/><circle id="ringArc" cx="75" cy="75" r="62" fill="none" stroke="#3557ff" stroke-width="12" stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)"/></svg><b>120<small>van 240 EC</small></b></div><div><span class="pill">Jaar 3 van 4</span><h3 style="margin-top:10px">Studievoortgang</h3><ul class="tl"><li><span class="y">2024 – 2028</span><span class="w">HBO-ICT, Software Engineering</span><span class="d">Windesheim, Almere</span></li><li><span class="y">2025</span><span class="w">Propedeuse behaald</span><span class="d">60 EC binnen één jaar</span></li><li><span class="y">2020 – 2024</span><span class="w">Havo, Natuur &amp; Techniek</span><span class="d">Almere</span></li></ul></div></div>';
-  case 'skills':return '<div class="tabs" role="tablist">'+Object.keys(SKILLS).map((k,i)=>'<button type="button" role="tab" data-tab="'+k+'"'+(i?'':' class="on"')+'>'+k+'</button>').join('')+'</div><table class="mon"><thead><tr><th>Skill</th><th>Niveau</th><th style="text-align:right">%</th><th style="text-align:right">Jaren</th></tr></thead><tbody id="monBody"></tbody></table><div class="monfoot"><span id="monCount"></span><span>Eigen inschatting · live bijgewerkt</span></div>';
+  case 'over':return '<div class="note"><p class="muted mono" style="font-size:12px">over-mij.txt · laatst bewerkt vandaag</p><h3>Over mij</h3><p>Ik ben Ramazan Inan, junior software developer uit Lelystad. Ik zit in het <b>laatste jaar van HBO-ICT Software Engineering</b> aan Windesheim, en daarvoor heb ik mijn <b>mbo 4 Software Development</b> gehaald aan Deltion College.</p><p>Mijn voorkeur ligt bij frontend development, vooral met React en React Native, maar ik ben breed inzetbaar. Op dit moment loop ik stage bij TenCate, waar ik werk met Ignition, PLC-programmering, OPC UA en SQL Server.</p><p>Ik werk graag in een team en wil zoveel mogelijk leren in een professionele IT-omgeving. Ik ben beschikbaar voor werk, op locatie, hybride of op afstand.</p><div class="sig">Ramazan</div></div>';
+  case 'opleiding':return '<div class="study"><div class="ring"><svg viewBox="0 0 150 150"><circle cx="75" cy="75" r="62" fill="none" stroke="#e3e6ee" stroke-width="12"/><circle id="ringArc" cx="75" cy="75" r="62" fill="none" stroke="#3557ff" stroke-width="12" stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6" style="transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)"/></svg><b>Jaar 4<small>van 4 · laatste jaar</small></b></div><div><span class="pill">Afstudeerjaar</span><h3 style="margin-top:10px">Opleiding</h3><ul class="tl"><li><span class="y">2023 – 2027</span><span class="w">HBO-ICT, Software Engineering</span><span class="d">Windesheim · bachelor</span></li><li><span class="y">2021 – 2023</span><span class="w">MBO 4, Software Development</span><span class="d">Deltion College · diploma behaald</span></li></ul></div></div>';
+  case 'skills':return '<div class="tabs" role="tablist">'+Object.keys(SKILLS).map((k,i)=>'<button type="button" role="tab" data-tab="'+k+'"'+(i?'':' class="on"')+'>'+k+'</button>').join('')+'</div><table class="mon"><thead><tr><th>Skill</th><th>Gebruikt bij</th><th style="text-align:right">Status</th></tr></thead><tbody id="monBody"></tbody></table><div class="monfoot"><span id="monCount"></span><span>Bron: LinkedIn-profiel</span></div>';
   case 'projecten':return '<div class="finder"><div class="side"><div class="lbl">Favorieten</div><span class="on">Projecten</span><span>Recent</span><span>Downloads</span><div class="lbl">Locaties</div><span>GitLab Windesheim</span><span>GitHub</span></div><div class="fmain" id="fmain"></div></div>';
-  case 'ervaring':return '<div class="cal"><div class="ev"><span class="yr">2025<br>nu</span><div class="blk" style="background:#ffe8ec;border-color:#e5364f"><b>Freelance webdeveloper</b><span>Websites en webapps voor lokale ondernemers, van ontwerp tot livegang.</span><br><em>doorlopend</em></div></div><div class="ev"><span class="yr">2024<br>2025</span><div class="blk" style="background:#e8ebff;border-color:#3557ff"><b>Medewerker IT-support</b><span>Autobedrijf in Almere: hardware, accounts en interne tools.</span><br><em>bijbaan · 16 uur per week</em></div></div><div class="ev"><span class="yr">2022<br>2024</span><div class="blk" style="background:#e3f8f1;border-color:#11a37f"><b>Bijbaan verkoop</b><span>Klantcontact, kassa en samenwerken onder druk.</span><br><em>weekenden</em></div></div></div>';
-  case 'contact':return '<form class="mail" id="mailF" autocomplete="off"><div class="mrow"><label>Aan</label><output id="mTo">'+EMAIL+'</output><button class="wbtn" type="button" id="mCopyAddr">Kopieer adres</button></div><div class="mrow"><label for="mSub">Onderwerp</label><input id="mSub" type="text" value="Stageplek bij ons team"></div><textarea id="mBody" aria-label="Bericht">Hoi Ramazan,\n\nWe hebben je cv bekeken en willen graag kennismaken.\n\nGroet,\n</textarea></form><div class="mfoot"><button class="wbtn pri" type="button" id="mCopy">Kopieer bericht</button><a class="wbtn" href="https://github.com" target="_blank" rel="noopener">GitHub</a><a class="wbtn" href="https://www.linkedin.com" target="_blank" rel="noopener">LinkedIn</a><span class="muted">RamazanOS verstuurt zelf geen mail. Kopieer het bericht en plak het in je eigen mailprogramma.</span></div>';
+  case 'ervaring':return '<div class="cal"><div class="ev"><span class="yr">2026<br>nu</span><div class="blk" style="background:#e3f8f1;border-color:#11a37f"><b>Stagiair softwareontwikkeling · TenCate</b><span>Softwareontwikkeling met Ignition, PLC-programmering, OPC UA en Microsoft SQL Server.</span><br><em>stage · Nijverdal · op locatie</em></div></div><div class="ev"><span class="yr">2023</span><div class="blk" style="background:#e8ebff;border-color:#3557ff"><b>Junior webontwikkelaar · MMC IT Solutions</b><span>Maatwerk softwareontwikkeling met Python, React Native, React.js en Django REST framework.</span><br><em>stage · feb – jul 2023 · Lelystad</em></div></div><div class="ev"><span class="yr">2021<br>2023</span><div class="blk" style="background:#fff3dc;border-color:#f5a623"><b>Powerservice / Smartbar · MediaMarkt</b><span>Parttime baan naast mijn opleiding.</span><br><em>parttime · dec 2021 – jun 2023 · Zwolle</em></div></div><div class="ev"><span class="yr">2022</span><div class="blk" style="background:#ffe8ec;border-color:#e5364f"><b>Programmeren · SenS Online Solutions</b><span>Stage tijdens de mbo-opleiding Software Development.</span><br><em>stage · jan – jul 2022 · Almere</em></div></div></div>';
+  case 'contact':return '<form class="mail" id="mailF" autocomplete="off"><div class="mrow"><label>Aan</label><output id="mTo">'+EMAIL+'</output><button class="wbtn" type="button" id="mCopyAddr">Kopieer adres</button></div><div class="mrow"><label for="mSub">Onderwerp</label><input id="mSub" type="text" value="Kennismaking"></div><textarea id="mBody" aria-label="Bericht">Hoi Ramazan,\n\nWe hebben je cv bekeken en willen graag kennismaken.\n\nGroet,\n</textarea></form><div class="mfoot"><button class="wbtn pri" type="button" id="mCopy">Kopieer bericht</button><a class="wbtn" href="'+GITHUB+'" target="_blank" rel="noopener">GitHub</a><a class="wbtn" href="'+LINKEDIN+'" target="_blank" rel="noopener">LinkedIn</a><span class="muted">RamazanOS verstuurt zelf geen mail. Kopieer het bericht en plak het in je eigen mailprogramma.</span></div>';
   case 'terminal':return '<div class="term" id="term"><div class="o ac">RamazanOS 1.0 · typ help</div><form id="tF"><b>ramazan@os:~$</b><input id="tI" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" enterkeyhint="send" aria-label="Terminalcommando"><button type="button" id="tGo" class="tgo" aria-label="Commando uitvoeren">Enter ↵</button></form></div>';
   case 'prullenbak':return '<div class="empty">'+SVG.trash+'<b style="color:#3a3d46">De prullenbak is leeg</b><span>Ramazan gooit geen code weg. Alleen bugs.</span></div>';
   }
 }
 function initApp(id,el){
   el.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>openApp(b.dataset.go)));
-  if(id==='opleiding'){requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=el.querySelector('#ringArc');if(a)a.style.strokeDashoffset=389.6*.5;}));}
-  if(id==='skills'){let tab='Talen';const body=el.querySelector('#monBody'),cnt=el.querySelector('#monCount');
-    function rows(){body.innerHTML=SKILLS[tab].map(s=>'<tr><td class="n">'+s[0]+'</td><td><div class="bar"><i style="width:0"></i></div></td><td class="p">0</td><td class="p">'+s[2]+'</td></tr>').join('');cnt.textContent=SKILLS[tab].length+' processen';tick(true);}
-    function tick(first){const trs=body.querySelectorAll('tr');SKILLS[tab].forEach((s,i)=>{const v=Math.max(5,Math.min(99,s[1]+(first?0:Math.round((Math.random()-.5)*8))));const tr=trs[i];if(!tr)return;
-      requestAnimationFrame(()=>{tr.querySelector('.bar i').style.width=v+'%';tr.cells[2].textContent=v;});});}
+  if(id==='opleiding'){requestAnimationFrame(()=>requestAnimationFrame(()=>{const a=el.querySelector('#ringArc');if(a)a.style.strokeDashoffset=389.6*.12;}));}
+  if(id==='skills'){let tab=Object.keys(SKILLS)[0];const body=el.querySelector('#monBody'),cnt=el.querySelector('#monCount');
+    function rows(){body.innerHTML=SKILLS[tab].map(s=>{const live=s[1]==='TenCate';return '<tr><td class="n">'+s[0]+'</td><td class="muted">'+(s[1]||'–')+'</td><td class="p" style="width:110px"><span class="pill" style="'+(live?'':'background:#eef0f4;color:#4a4d57')+'">'+(live?'actief':'beschikbaar')+'</span></td></tr>';}).join('');cnt.textContent=SKILLS[tab].length+' processen';}
     el.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;el.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('on',x===b));rows();}));
-    rows();el._iv=setInterval(()=>{if($('#os').classList.contains('on'))tick(false);},1600);}
+    rows();}
   if(id==='projecten'){const fm=el.querySelector('#fmain');
     const folderSVG=c=>'<svg viewBox="0 0 64 52"><path d="M2 8a4 4 0 0 1 4-4h16l5 5h31a4 4 0 0 1 4 4v33a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="'+c[0]+'"/><path d="M2 16a4 4 0 0 1 4-4h52a4 4 0 0 1 4 4v30a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="'+c[1]+'"/></svg>';
     function list(){fm.innerHTML='<div class="crumb">Projecten · '+PROJ.length+' mappen</div><div class="folders">'+PROJ.map((p,i)=>'<button class="folder" type="button" data-p="'+i+'">'+folderSVG(p.c)+'<span>'+p.n+'</span></button>').join('')+'</div>';
       fm.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>detail(+b.dataset.p)));}
-    function detail(i){const p=PROJ[i];fm.innerHTML='<div class="crumb"><button type="button" id="back">Projecten</button> / '+p.n+'</div><div class="pdet"><div class="shot" style="background:radial-gradient(circle at 30% 40%,'+p.c[1]+',transparent 60%),linear-gradient(135deg,'+p.c[0]+','+p.c[1]+')"></div><h4>'+p.n+'</h4><p>'+p.d+'</p><div class="chips">'+p.t.map(x=>'<span class="pill">'+x+'</span>').join('')+'</div><a class="wbtn" href="https://github.com" target="_blank" rel="noopener">Bekijk code</a></div>';
+    function detail(i){const p=PROJ[i];fm.innerHTML='<div class="crumb"><button type="button" id="back">Projecten</button> / '+p.n+'</div><div class="pdet"><div class="shot" style="background:radial-gradient(circle at 30% 40%,'+p.c[1]+',transparent 60%),linear-gradient(135deg,'+p.c[0]+','+p.c[1]+')"></div><h4>'+p.n+'</h4><p class="muted mono" style="font-size:12px;margin-bottom:8px">'+p.w+'</p><p>'+p.d+'</p><div class="chips">'+p.t.map(x=>'<span class="pill">'+x+'</span>').join('')+'</div>'+(p.url?'<a class="wbtn" href="'+p.url+'" target="_blank" rel="noopener">Bekijk code op GitHub</a>':'')+'</div>';
       fm.querySelector('#back').addEventListener('click',list);}
     list();}
   if(id==='contact'){const mt=el.querySelector('#mTo');
@@ -361,9 +365,9 @@ function initApp(id,el){
       else if(target){openApp(target);out(APPS[target].t+' geopend','ok');}
       else if(['open','cd','cat','start','run'].includes(parts[0])){out('niet gevonden: '+(arg||'(leeg)')+' · typ ls voor wat er is','er');}
       else if(lc==='ls'||lc==='ls -la'){out('over  opleiding  skills  projecten  ervaring  contact  prullenbak','ac');out('typ een naam om de app te openen','');}
-      else if(lc==='whoami'){out('ramazan · software engineer in opleiding');}
+      else if(lc==='whoami'){out('ramazan inan · junior software developer');}
       else if(lc==='date'){out(new Date().toLocaleString('nl-NL',{dateStyle:'full',timeStyle:'short'}));}
-      else if(lc==='neofetch'){['ramazan@os','----------','OS: RamazanOS 1.0','Host: Windesheim Almere','Opleiding: HBO-ICT SE, jaar 3','Shell: TypeScript, C#','Packages: 120 EC'].forEach((l,i)=>out(l,i?'':'ac'));}
+      else if(lc==='neofetch'){['ramazan@os','----------','OS: RamazanOS 1.0','Host: Lelystad, NL','Opleiding: HBO-ICT SE, laatste jaar','Vooropleiding: MBO 4 Software Development','Stage: TenCate','Shell: React, React Native, Python'].forEach((l,i)=>out(l,i?'':'ac'));}
       else if(lc==='clear'){term.querySelectorAll('.o').forEach(n=>n.remove());}
       else if(lc==='exit'){closeApp('terminal');}
       else if(lc==='shutdown'||lc==='logout'){logout();}
@@ -541,7 +545,7 @@ let steamBoost=0;
 
 /* books */
 const books=new THREE.Group();books.position.set(3.35,0,-1.05);
-const spines=[['HBO-ICT','#2e3a8c'],['Algoritmen','#8c2e3a'],['C# in de praktijk','#1f6b54'],['Software Design','#b7862b']];
+const spines=[['HBO-ICT','#2e3a8c'],['MBO Software Dev','#8c2e3a'],['React Native','#1f6b54'],['Python','#b7862b']];
 let by=0;spines.forEach(([t,c],i)=>{const h=.22+R()*.1,w=1.7-i*.12+R()*.1,d=1.15+R()*.1;
   const sp=ctex(512,64,(g,W,H)=>{g.fillStyle=c;g.fillRect(0,0,W,H);g.fillStyle='rgba(255,255,255,.85)';g.font='600 30px "Geist", sans-serif';g.textBaseline='middle';g.fillText(t,22,H/2+2);g.fillStyle='rgba(255,255,255,.4)';g.fillRect(W-40,10,4,H-20);});
   const cm=std({color:c,roughness:.7}),pm=std({color:0xf1ebdd,roughness:.9});
@@ -560,7 +564,7 @@ shadow(phone);interactive(phone,'phone','Telefoon · contact');
 
 /* sticky notes */
 const notes=new THREE.Group();notes.position.set(-2.1,0,1.45);
-[['TypeScript\nC#  SQL','#ffe36e',-.1,0],['React\n.NET','#ffa3c4',.25,.7],['Three.js\nDocker','#8fd8ff',-.2,1.4]].forEach(([t,c,r,x])=>{
+[['React\nReact Native','#ffe36e',-.1,0],['Python\nDjango','#ffa3c4',.25,.7],['SQL\nIgnition','#8fd8ff',-.2,1.4]].forEach(([t,c,r,x])=>{
   const tx=ctex(256,256,(g,w,h)=>{g.fillStyle=c;g.fillRect(0,0,w,h);g.fillStyle='rgba(0,0,0,.08)';g.fillRect(0,0,w,26);g.fillStyle='#24252b';g.font='600 34px "Geist", sans-serif';t.split('\n').forEach((l,i)=>g.fillText(l,22,96+i*48));});
   const m=new THREE.Mesh(new THREE.PlaneGeometry(.62,.62),std({map:tx,roughness:.9}));m.rotation.x=-Math.PI/2;m.rotation.z=r;m.position.set(x-.7,.004+x*.001,0);m.receiveShadow=true;notes.add(m);});
 interactive(notes,'notes',"Memo's · skills");
